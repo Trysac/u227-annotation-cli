@@ -3,27 +3,27 @@
 ## Running
 
 ```sh
-uv run pytest --cov=annotation_cli   # tests with coverage report
-uv run python scripts/check.py      # every gate, as CI and the factory run it
+uv run pytest --cov=annotation_cli
+uv run python scripts/check.py
 ```
 
 ## Policy
 
-- Branch coverage of `src/annotation_cli` must stay at or above 80 %; the gate fails below it.
-- Tests exercise the public API (`import annotation_cli`) and assert every observable effect:
-  return values, raised exceptions and their messages.
-- Each bug fix starts with a failing test that reproduces it.
-- Tests are deterministic: no network, no wall clock, no dependence on test order.
+- Tests exercise the public API (`import annotation_cli`) and assert return values, raised exceptions and their messages.
+- Tests use temporary files via pytest's `tmp_path`; they do not use the network.
+- The package is tested with pytest; coverage is reported for `annotation_cli`.
 
 ## Tiers
 
-- Local tier (every gate run, coverage measured here): unit and property tests, plus conformance on small
-  fixtures kept in the repository.
-- CI tier: conformance that needs an external tool or a download. Mark them `@pytest.mark.conformance`; `scripts/check.py` deselects them locally
-  (unless `FABRICA_CI=1`). The CI `conformance` job sets `FABRICA_CI=1` and runs the full suite. Tools are installed
-  by the optional `ci/conformance-setup.sh` (bash, CI only; verify every download against a pinned SHA-256), and
-  tagged tests skip cleanly when their tool is missing.
+The supplied repository has one test tier: the pytest suite in `tests/test_annotation_cli.py`. No separate conformance tests or external-tool downloads are configured in the supplied files.
 
 ## Layout
 
-`tests/test_<module>.py` mirrors each public module. Shared fixtures go in `tests/conftest.py`.
+`tests/test_annotation_cli.py` is the only test module. It imports from `annotation_cli` and `annotation_cli.__main__`, and defines local helpers `write_lines` and `read_store` for writing fixture files and inspecting the JSONL store.
+
+The module covers:
+
+- `LabelSchema`: valid mappings, reserved keys `u`, `s`, `q`, `?`, key length, label length, entry-count limits and non-mapping input.
+- `load_items`: valid JSONL, empty files, invalid JSON, missing `output`, non-string `prompt`, invalid UTF-8, duplicate ids, oversized lines (default and explicit limits) and the item-count limit.
+- `latest_labels`: latest-record selection, null-label undo records, corrupt lines and invalid UTF-8.
+- The interactive `annotate` session, `cohen_kappa` and `main` against the acceptance criteria.

@@ -9,4 +9,5 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 
+- Added `annotation_cli` library and CLI for terminal-based annotation with undo, resume, sanitised display, and Cohen's kappa agreement.
 - Initial project structure from the factory utility template.

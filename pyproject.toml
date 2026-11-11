@@ -19,6 +19,9 @@ classifiers = [
 ]
 dependencies = []
 
+[project.scripts]
+annotation-cli = "annotation_cli.__main__:main"
+
 [project.urls]
 Homepage = "https://github.com/Trysac/u227-annotation-cli"
 Source = "https://github.com/Trysac/u227-annotation-cli"
